@@ -36,7 +36,7 @@ A powerful, user-friendly web scraping application built with Flask that allows 
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/flask-web-scraper.git
+   git clone https://github.com/devmab24/flask-web-scraper.git
    cd flask-web-scraper
    ```
 
