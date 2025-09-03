@@ -27,6 +27,8 @@ class WebScraper:
     
     def scrape_hacker_news(self, pages=2, min_votes=99):
         """Enhanced Hacker News scraper based on your original code"""
+        logger.info(f"Scraping Hacker News: {pages} pages, min {min_votes} votes")
+        
         all_links = []
         all_subtext = []
         
@@ -44,6 +46,8 @@ class WebScraper:
                 links = soup.select('.titleline > a')
                 subtext = soup.select('.subtext')
                 
+                logger.info(f"Page {page}: Found {len(links)} links and {len(subtext)} subtext items")
+                
                 all_links.extend(links)
                 all_subtext.extend(subtext)
                 
@@ -51,7 +55,9 @@ class WebScraper:
                 logger.error(f"Error scraping page {page}: {str(e)}")
                 continue
         
-        return self.create_custom_hn(all_links, all_subtext, min_votes)
+        results = self.create_custom_hn(all_links, all_subtext, min_votes)
+        logger.info(f"Found {len(results)} stories above {min_votes} votes")
+        return results
     
     def create_custom_hn(self, links, subtext, min_votes):
         """Process Hacker News data with better error handling"""
@@ -77,7 +83,7 @@ class WebScraper:
                 # Extract votes - FIXED: Check if vote elements exist
                 vote_elements = subtext[idx].select('.score')
                 points = 0
-                if vote_elements:  # Check if list has elements, not len()
+                if vote_elements:  # Check if list has elements
                     try:
                         vote_text = vote_elements[0].getText()
                         # Extract numbers from text like "123 points"
@@ -201,6 +207,7 @@ def scrape():
                 data['css_selectors'] = css_selectors
         
         scrape_type = data.get('scrape_type', 'hackernews')
+        logger.info(f"Starting {scrape_type} scraping with data: {data}")
         
         if scrape_type == 'hackernews':
             pages = int(data.get('pages', 2))
@@ -228,6 +235,8 @@ def scrape():
             else:
                 flash('Invalid scrape type', 'error')
                 return redirect(url_for('index'))
+        
+        logger.info(f"Scraping completed: {len(results)} items found")
         
         # Store results in session for export functionality
         session['last_results'] = results
@@ -267,6 +276,9 @@ def scrape():
         
     except Exception as e:
         logger.error(f"Scraping error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        
         if request.is_json:
             return jsonify({'error': str(e)}), 500
         else:

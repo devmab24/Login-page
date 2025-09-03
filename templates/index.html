@@ -321,12 +321,21 @@
                             <tr>
                                 {% for column in columns %}
                                 <td>
+                                    {% set value = row[column] %}
                                     {% if 'link' in column or 'href' in column %}
-                                        <a href="{{ row[column] }}" target="_blank" class="text-decoration-none">
-                                            {{ (row[column][:50] + '...') if row[column]|length > 50 else row[column] }}
+                                        <a href="{{ value }}" target="_blank" class="text-decoration-none">
+                                            {% if value is string and value|length > 50 %}
+                                                {{ value[:50] + '...' }}
+                                            {% else %}
+                                                {{ value }}
+                                            {% endif %}
                                         </a>
                                     {% else %}
-                                        {{ (row[column][:100] + '...') if row[column]|length > 100 else row[column] }}
+                                        {% if value is string and value|length > 100 %}
+                                            {{ value[:100] + '...' }}
+                                        {% else %}
+                                            {{ value }}
+                                        {% endif %}
                                     {% endif %}
                                 </td>
                                 {% endfor %}
